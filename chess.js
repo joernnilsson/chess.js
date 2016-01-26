@@ -38,6 +38,10 @@ var Chess = function(fen) {
 
   /* jshint indent: false */
 
+  var n_generate_moves = 0;
+  var n_attacked = 0;
+
+
   var BLACK = 'b';
   var WHITE = 'w';
 
@@ -321,7 +325,12 @@ var Chess = function(fen) {
     return {valid: true, error_number: 0, error: errors[0]};
   }
 
+  function get_board(){
+    return board;
+  }
+
   function generate_fen() {
+    if(typeof(window) != "undefined") window["p_generate_fen"]++;
     var empty = 0;
     var fen = '';
 
@@ -400,6 +409,11 @@ var Chess = function(fen) {
     return (piece) ? {type: piece.type, color: piece.color} : null;
   }
 
+  function get_88(square) {
+    var piece = board[square];
+    return (piece) ? {type: piece.type, color: piece.color} : null;
+  }
+
   function put(piece, square) {
     /* check for valid piece object */
     if (!('type' in piece && 'color' in piece)) {
@@ -429,7 +443,8 @@ var Chess = function(fen) {
       kings[piece.color] = sq;
     }
 
-    update_setup(generate_fen());
+    // Performance killer
+    // update_setup(generate_fen());
 
     return true;
   }
@@ -469,6 +484,8 @@ var Chess = function(fen) {
   }
 
   function generate_moves(options) {
+    n_generate_moves++;
+    if(typeof(window) != "undefined") window["p_generate_moves"]++;
     function add_move(board, moves, from, to, flags) {
       /* if pawn promotion */
       if (board[from].type === PAWN &&
@@ -624,6 +641,7 @@ var Chess = function(fen) {
    * (SAN)
    */
   function move_to_san(move) {
+    if(typeof(window) != "undefined") window["p_move_to_san"]++;
     var output = '';
 
     if (move.flags & BITS.KSIDE_CASTLE) {
@@ -665,6 +683,8 @@ var Chess = function(fen) {
   }
 
   function attacked(color, square) {
+    n_attacked++;
+    if(typeof(window) != "undefined") window["p_attacked"]++;
     for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
       /* did we run off the end of the board */
       if (i & 0x88) { i += 7; continue; }
@@ -1588,7 +1608,56 @@ var Chess = function(fen) {
       }
 
       return move_history;
-    }
+    },
+
+
+    // Extended
+    generate_moves: function(opts) {
+      return generate_moves(opts);
+    },
+
+    make_move: function(move) {
+      return make_move(move);
+    },
+
+    undo_move: function() {
+      return undo_move();
+    },
+
+    stats: function(){
+      return {
+        generate_moves: n_generate_moves,
+        attacked: n_attacked
+      };
+    },
+
+    make_pretty: function (move) {
+      return make_pretty(move); 
+    },
+
+    move_to_san: function (move) {
+      return move_to_san(move); 
+    },
+
+    get_board: function () {
+      return get_board();
+    },
+
+    get_88: function (s) {
+      return get_88(s);
+    },
+
+    algebraic: function (s) {
+      return algebraic(s);
+    },
+
+    king_attacked: function (color) {
+      return king_attacked(color);
+    },
+
+    attacked: function (color, square) {
+      return attacked(color, square);
+    },
 
   };
 };
