@@ -330,7 +330,7 @@ var Chess = function(fen) {
   }
 
   function generate_fen() {
-    if(typeof(window) != "undefined") window["p_generate_fen"]++;
+    if(typeof(self) != "undefined") self["p_generate_fen"]++;
     var empty = 0;
     var fen = '';
 
@@ -485,7 +485,7 @@ var Chess = function(fen) {
 
   function generate_moves(options) {
     n_generate_moves++;
-    if(typeof(window) != "undefined") window["p_generate_moves"]++;
+    if(typeof(self) != "undefined") self["p_generate_moves"]++;
     function add_move(board, moves, from, to, flags) {
       /* if pawn promotion */
       if (board[from].type === PAWN &&
@@ -641,7 +641,7 @@ var Chess = function(fen) {
    * (SAN)
    */
   function move_to_san(move) {
-    if(typeof(window) != "undefined") window["p_move_to_san"]++;
+    if(typeof(self) != "undefined") self["p_move_to_san"]++;
     var output = '';
 
     if (move.flags & BITS.KSIDE_CASTLE) {
@@ -674,6 +674,7 @@ var Chess = function(fen) {
       if (in_checkmate()) {
         output += '#';
       } else {
+
         output += '+';
       }
     }
@@ -684,7 +685,7 @@ var Chess = function(fen) {
 
   function attacked(color, square) {
     n_attacked++;
-    if(typeof(window) != "undefined") window["p_attacked"]++;
+    if(typeof(self) != "undefined") self["p_attacked"]++;
     for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
       /* did we run off the end of the board */
       if (i & 0x88) { i += 7; continue; }
@@ -1657,6 +1658,28 @@ var Chess = function(fen) {
 
     attacked: function (color, square) {
       return attacked(color, square);
+    },
+
+    file: function (s) {
+      return file(s);
+    },
+
+    rank: function (s) {
+      return rank(s);
+    },
+
+    underlaying: function () {
+      return {
+        board: board,
+        kings: kings,
+        turn: turn,
+        castling: castling,
+        ep_square: ep_square,
+        half_moves: half_moves,
+        move_number: move_number,
+        history: history,
+        header: header
+      };
     },
 
   };
