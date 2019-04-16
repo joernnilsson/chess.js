@@ -38,6 +38,8 @@ var Chess = function(fen) {
 
   /* jshint indent: false */
 
+  var g_profile = typeof(self) != "undefined" ? self : typeof(window) != "undefined" ? window : global;
+
   var n_generate_moves = 0;
   var n_attacked = 0;
 
@@ -330,7 +332,7 @@ var Chess = function(fen) {
   }
 
   function generate_fen() {
-    if(typeof(self) != "undefined") self["p_generate_fen"]++;
+    g_profile["p_generate_fen"]++;
     var empty = 0;
     var fen = '';
 
@@ -485,7 +487,7 @@ var Chess = function(fen) {
 
   function generate_moves(options) {
     n_generate_moves++;
-    if(typeof(self) != "undefined") self["p_generate_moves"]++;
+    g_profile["p_generate_moves"]++;
     function add_move(board, moves, from, to, flags) {
       /* if pawn promotion */
       if (board[from].type === PAWN &&
@@ -641,7 +643,7 @@ var Chess = function(fen) {
    * (SAN)
    */
   function move_to_san(move) {
-    if(typeof(self) != "undefined") self["p_move_to_san"]++;
+    g_profile["p_move_to_san"]++;
     var output = '';
 
     if (move.flags & BITS.KSIDE_CASTLE) {
@@ -685,7 +687,7 @@ var Chess = function(fen) {
 
   function attacked(color, square) {
     n_attacked++;
-    if(typeof(self) != "undefined") self["p_attacked"]++;
+    g_profile["p_attacked"]++;
     for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
       /* did we run off the end of the board */
       if (i & 0x88) { i += 7; continue; }
@@ -1678,7 +1680,21 @@ var Chess = function(fen) {
         half_moves: half_moves,
         move_number: move_number,
         history: history,
-        header: header
+        header: header,
+        SQUARES: SQUARES,
+        ATTACKS: ATTACKS,
+        RAYS: RAYS,
+        PIECE_OFFSETS: PIECE_OFFSETS,
+        PAWN_OFFSETS: PAWN_OFFSETS,
+        SHIFTS,
+        BLACK,
+        WHITE,
+        PAWN,
+        KNIGHT,
+        BISHOP,
+        ROOK,
+        QUEEN,
+        KING
       };
     },
 
@@ -1689,4 +1705,4 @@ var Chess = function(fen) {
  * environment */
 if (typeof exports !== 'undefined') exports.Chess = Chess;
 /* export Chess object for any RequireJS compatible environment */
-if (typeof define !== 'undefined') define( function () { return Chess;  });
+//if (typeof define !== 'undefined') define( function () { return Chess;  });
